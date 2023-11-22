@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBConnection {
+    private static String dbName;
     private static Connection connection;
     private DBConnection() throws SQLException {
         // variables a modifier en fonction de la base
@@ -14,7 +15,7 @@ public class DBConnection {
         String portNumber = "3306";
 
         // iL faut une base nommee testPersonne !
-        String dbName = "testpersonne";
+
 
         // creation de la connection
         Properties connectionProps = new Properties();
@@ -30,5 +31,13 @@ public class DBConnection {
             new DBConnection();
         }
         return connection;
+    }
+    public static void setNomDB(String nomDB) throws SQLException {
+        if(connection != null){
+            connection.close();
+            connection = null;
+            dbName = nomDB;
+            new DBConnection();
+        }
     }
 }
