@@ -13,6 +13,17 @@ public class Personne {
         this.prenom = prenom;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -37,12 +48,26 @@ public class Personne {
         PreparedStatement prepareStatement = connection.prepareStatement("select id, nom, prenom from Personne where id = ?");
         prepareStatement.setString(1, id+"");
         ResultSet res = prepareStatement.executeQuery();
-        Personne p = new Personne("Inconnu","");
+        Personne p = null;
         if(res.next()){
             p = new Personne(res.getString("nom"), res.getString("prenom"));
             p.id = Integer.valueOf(res.getString("id"));
         }
         return p;
+    }
+    public static ArrayList<Personne> findByName(String name) throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement prepareStatement = connection.prepareStatement("select id, nom, prenom from Personne where nom like ?");
+        prepareStatement.setString(1, name);
+        ResultSet res = prepareStatement.executeQuery();
+        ArrayList<Personne> listPersonne = new ArrayList<Personne>();
+        if(res.next()){
+            Personne p = new Personne(res.getString("nom"), res.getString("prenom"));
+            p.id = Integer.valueOf(res.getString("id"));
+            listPersonne.add(p);
+        }
+        return listPersonne;
     }
 
     @Override
