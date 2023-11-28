@@ -13,8 +13,13 @@ public class Personne {
         this.prenom = prenom;
     }
 
+
     public int getId() {
         return id;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getNom() {
@@ -62,12 +67,29 @@ public class Personne {
         prepareStatement.setString(1, name);
         ResultSet res = prepareStatement.executeQuery();
         ArrayList<Personne> listPersonne = new ArrayList<Personne>();
-        if(res.next()){
+        while(res.next()){
             Personne p = new Personne(res.getString("nom"), res.getString("prenom"));
             p.id = Integer.valueOf(res.getString("id"));
             listPersonne.add(p);
         }
         return listPersonne;
+    }
+
+    public static void createTable() throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        String createString = "CREATE TABLE Personne ( " + "ID INTEGER  AUTO_INCREMENT, "
+                + "NOM varchar(40) NOT NULL, " + "PRENOM varchar(40) NOT NULL, " + "PRIMARY KEY (ID))";
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate(createString);
+    }
+
+    public static void deleteTable() throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        String drop = "DROP TABLE Personne";
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate(drop);
     }
 
     @Override
@@ -90,5 +112,54 @@ public class Personne {
     @Override
     public int hashCode() {
         return Objects.hash(id, nom, prenom);
+    }
+
+    public void save() throws SQLException{
+        if(this.id == -1){
+            this.saveNew();
+        }
+        else{
+            this.update();
+        }
+    }
+
+    private void update() throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        String SQLprep = "update Personne set nom=?, prenom=? where id=?;";
+        PreparedStatement prep = connection.prepareStatement(SQLprep);
+        prep.setString(1, this.nom);
+        prep.setString(2, this.prenom);
+        prep.setInt(3, this.id);
+        prep.execute();
+    }
+
+    public void saveNew() throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        String SQLPrep = "INSERT INTO Personne (nom, prenom) VALUES (?,?);";
+        PreparedStatement prep;
+        // l'option RETURN_GENERATED_KEYS permet de recuperer l'id (car
+        // auto-increment)
+        prep = connection.prepareStatement(SQLPrep, Statement.RETURN_GENERATED_KEYS);
+        prep.setString(1, this.nom);
+        prep.setString(2, this.prenom);
+        prep.executeUpdate();
+        ResultSet res = prep.getGeneratedKeys();
+        if(res.next()) {
+            this.id = (res.getInt(1));
+        }
+    }
+
+    public void delete() throws SQLException{
+        DBConnection.setNomDB("testpersonne");
+        Connection connection = DBConnection.getConnection();
+        String sql = "DELETE FROM Personne WHERE id = " + this.id;
+        PreparedStatement prep;
+        // l'option RETURN_GENERATED_KEYS permet de recuperer l'id (car
+        // auto-increment)
+        prep = connection.prepareStatement(sql);
+        prep.executeUpdate();
+        this.id = -1;
     }
 }
