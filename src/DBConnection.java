@@ -36,8 +36,8 @@ public class DBConnection {
         if(connection != null){
             connection.close();
             connection = null;
-            dbName = nomDB;
-            new DBConnection();
         }
+        dbName = nomDB;
+        new DBConnection();
     }
 }
