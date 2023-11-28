@@ -75,6 +75,10 @@ public class Personne {
         return listPersonne;
     }
 
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
     public static void createTable() throws SQLException{
         DBConnection.setNomDB("testpersonne");
         Connection connection = DBConnection.getConnection();
