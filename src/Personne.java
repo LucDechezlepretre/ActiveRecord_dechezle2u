@@ -134,7 +134,7 @@ public class Personne {
         prep.execute();
     }
 
-    public void saveNew() throws SQLException{
+    private void saveNew() throws SQLException{
         DBConnection.setNomDB("testpersonne");
         Connection connection = DBConnection.getConnection();
         String SQLPrep = "INSERT INTO Personne (nom, prenom) VALUES (?,?);";
