@@ -18,19 +18,7 @@ public class Film {
     public static void createTable() throws SQLException {
         DBConnection.setNomDB("testpersonne");
         Connection connection = DBConnection.getConnection();
-        String createString =
-                "CREATE TABLE `Film` (\n" +
-                "  `id` int(11) NOT NULL,\n" +
-                "  `titre` varchar(40) NOT NULL,\n" +
-                "  `id_rea` int(11) DEFAULT NULL\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=latin1;"+
-                "ALTER TABLE `Film`\n" +
-                "  ADD PRIMARY KEY (`id`),\n" +
-                "  ADD KEY `id_rea` (`id_rea`);" +
-                "ALTER TABLE `Film`\n" +
-                "  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;"+
-                "ALTER TABLE `Film`\n" +
-                "  ADD CONSTRAINT `film_ibfk_1` FOREIGN KEY (`id_rea`) REFERENCES `Personne` (`id`);";
+        String createString = "CREATE TABLE Film (ID INTEGER AUTO_INCREMENT, TITRE varchar(40) NOT NULL, ID_REAL INT(11) NOT NULL, PRIMARY KEY (ID), FOREIGN KEY (ID_REAL) REFERENCES Personne(id)); ";
         Statement stmt = connection.createStatement();
         stmt.executeUpdate(createString);
     }
@@ -56,7 +44,10 @@ public class Film {
         return film;
     }
 
-    public void save() throws SQLException{
+    public void save() throws SQLException, RealisateurAbsentException{
+        if(this.id_real == -1){
+            throw new RealisateurAbsentException();
+        }
         if(this.id == -1){
             this.saveNew();
         }
